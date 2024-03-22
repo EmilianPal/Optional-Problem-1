@@ -1,29 +1,34 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <climits>
 #define Size 301
 using namespace std;
 ifstream fin("distribution.txt");
 void setUp(float freq_eng[])
 {
+    //This function will receive the values of the percentage of appearance of each letter in the words of the English language
+    //The function will receive an array of at least 26 elements and will not return anything
     for(int i = 0; i < 26; ++i)
         fin >> freq_eng[i];
 }
 void freqWord(char text[], float freq[], int n)
 {
+    //This function will receive an array of string and it will count the appearance of each letter inside the word inside an array.
+    //Each letter is placed in a position equal to its place in the alphabet - 1.
+    //text[i] - 'a' is meant to represent said position
     for(int i = 0; i < 26; ++i)
         freq[i] = 0;
     for(int i = 0; i <= n; ++i)
     {
         if('a' <= text[i] and text[i] <= 'z')
-            freq[int(text[i] - 'a')]++;
+            freq[text[i] - 'a']++;
         if('A' <= text[i] and text[i] <= 'Z')
-            freq[int(text[i] - 'A')]++;
+            freq[text[i] - 'A']++;
     }
 }
 void normHist(float freq[])
 {
+    //This function will change the values of the histograph into a percentage
     float s = 0;
     for(int i = 0; i < 26; ++i)
         s += freq[i];
@@ -32,6 +37,9 @@ void normHist(float freq[])
 }
 float chiSquared(float freq[], float freq_eng[], int n)
 {
+    //This function will compute the Chi squared distance between a histograph and a Caesar encryption of the English alphabet by the value n
+    //the value n is added to the freq_eng's index to simulate the letters being shifted by the cypher with a value of n
+    //This function will return an int
     float s = 0;
     for (int i = 0; i < 26; ++i)
         s = s + (freq[i] - freq_eng[(i + n) % 26]) * (freq[i] - freq_eng[(i + n) % 26]) / freq_eng[(i + n) % 26];
@@ -39,9 +47,12 @@ float chiSquared(float freq[], float freq_eng[], int n)
 }
 int chiSquaredSol(float freq[], float freq_eng[])
 {
-    float dist, mini = INT_MAX;
-    int min_p;
-    for(int i = 0; i < 26; ++i)
+    //This function will return the shift of the text with the lowest Chi Squared distance
+    //min_p is an int between 0 and 25
+    float dist, mini;
+    int min_p = 0;
+    mini = chiSquared(freq, freq_eng, 0);
+    for(int i = 1; i < 26; ++i)
     {
         dist = chiSquared(freq, freq_eng, i);
         if(mini > dist)
@@ -54,6 +65,8 @@ int chiSquaredSol(float freq[], float freq_eng[])
 }
 void decrypt(char text[], int n, int sol, char decrypted[])
 {
+    //This function will place within the decrypted function the rough decryption of the text by shifting every character within text by n characters
+    strcpy(decrypted, "");
     for(int i = 0; i <=  n; ++i)
     {
         if('a' <= text[i] && text[i] <= 'z')
